@@ -4,7 +4,7 @@ A web crawling tool that creates WARC (Web ARChive) files from websites using wg
 
 ## Prerequisites
 
-- **Python 3.9** or higher
+- **Python 3.11** or higher
 - `wget` (with WARC support)
 - `uv` package manager
 

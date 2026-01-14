@@ -1,10 +1,11 @@
 [project]
-name = "datatrove"
+name = "crawler-project"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
+    "datatrove[all]>=0.7.0",
     "warcio>=1.7.5",
     "wget>=3.2",
 ]
