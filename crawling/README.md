@@ -80,7 +80,7 @@ DEPTH=6 ROBOTS=on WAIT_SECS=2 QUOTA=5G ./crawl_script.sh file.txt <prefix>
 ```
 
 **Available Parameters:**
-- `DEPTH`: Recursion depth (default: 4)
+- `DEPTH`: Recursion depth (default: 3)
 - `ROBOTS`: Respect robots.txt - use `on` or `off` (default: off)
 - `WAIT_SECS`: Delay between requests in seconds (default: 1)
 - `RANDOM_WAIT`: Add jitter to wait times - use `0` or `1` (default: 1)

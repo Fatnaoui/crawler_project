@@ -1,6 +1,31 @@
-# Datatrove
+# Crawler Project
 
-A web crawling tool that creates WARC (Web ARChive) files from websites using wget. Perfect for archiving and analyzing web content.
+A comprehensive web crawling and text extraction pipeline that creates WARC archives from websites and extracts clean text content for downstream processing.
+
+## Overview
+
+This project consists of three main processes:
+
+1. **Crawling** - Web crawling using wget to create WARC (Web ARChive) files
+2. **Datatrove Extraction** - Text extraction from WARC files using datatrove and Trafilatura
+3. **Crawled Dataset** - Final processed dataset output
+
+## Project Structure
+
+```
+crawler_project/
+├── crawling/              # Web crawling process
+│   ├── crawl_script.sh    # Main crawling script
+│   ├── file.txt          # Input URLs file
+│   ├── crawl_out/        # WARC output directory
+│   └── helpers/          # Helper scripts
+├── datatrove_extraction/ # Text extraction process
+│   ├── process.py        # Main extraction script
+│   ├── input/            # WARC input directory
+│   └── output/           # Extracted text output
+├── crawled_dataset/       # Final processed dataset
+└── pyproject.toml        # Project dependencies
+```
 
 ## Prerequisites
 
@@ -8,113 +33,69 @@ A web crawling tool that creates WARC (Web ARChive) files from websites using wg
 - `wget` (with WARC support)
 - `uv` package manager
 
-## Getting Started
+## Installation
 
-### 1. Install Dependencies
-
-First, make sure you have Python 3.9 installed. Then, install all project dependencies using `uv`:
+Install all project dependencies using `uv`:
 
 ```bash
 uv sync
 ```
 
-This will install all the required packages listed in `pyproject.toml`, including `warcio` and other dependencies.
+This will install all required packages listed in `pyproject.toml`, including:
+- `datatrove[all]` - Text extraction pipeline
+- `trafilatura` - Web content extraction
+- `warcio` - WARC file handling
+- `wget` - Web crawling
 
-### 2. Prepare Your Input File
+## Workflow
 
-Before running the crawler, you need to prepare the `crawling/file.txt` file with your target URLs. The format is simple:
+### 1. Crawling Process
 
-1. **Put the origin website URL at the top** (the main website you want to crawl)
-2. **Add sitemap URLs below it** (one URL per line)
+The crawling process uses wget to recursively crawl websites and create WARC archive files. See the [crawling README](crawling/README.md) for detailed instructions.
 
-Here's an example of how `crawling/file.txt` should look:
-
-```
-https://www.example.com/
-https://www.example.com/sitemap.xml
-https://www.example.com/sitemap-posts.xml
-https://www.example.com/sitemap-pages.xml
-```
-
-**Tips:**
-- Each URL should be on its own line
-- Blank lines are ignored
-- Lines starting with `#` are treated as comments
-- The first URL should be the main website you want to crawl
-
-### 3. Run the Crawler
-
-Navigate to the `crawling` directory and run the crawl script:
-
+**Quick Start:**
 ```bash
 cd crawling
+# 1. Put origin URL in file.txt (first line only)
+echo "https://www.example.com/" > file.txt
+
+# 2. Discover and add sitemaps automatically
+python helpers/get_sitmaps.py
+
+# 3. Run the crawler
 ./crawl_script.sh file.txt <prefix>
 ```
 
-Replace `<prefix>` with a descriptive tag for the url website, so that we keep track of the 
+Output: WARC files in `crawling/crawl_out/<prefix>/`
 
-**Default Settings:**
-- **Depth**: 4 (crawls 4 levels deep from the seed URLs)
-- **Robots**: off (doesn't respect robots.txt files)
+### 2. Datatrove Extraction Process
 
-The crawler will create WARC files in `crawl_out/<prefix>/` directory.
+The extraction process reads WARC files and extracts clean text content using Trafilatura, filtering out repetitive content. See the [datatrove_extraction README](datatrove_extraction/README.md) for detailed instructions.
 
-### 4. Customize Parameters (Optional)
-
-If you want to change the default settings, you can set environment variables before running the script:
-
+**Quick Start:**
 ```bash
-DEPTH=6 ROBOTS=on ./crawl_script.sh file.txt <prefix>
+cd datatrove_extraction
+# Place WARC files in input/ directory
+python process.py
 ```
 
-Available parameters:
-- `DEPTH`: Recursion depth (default: 4)
-- `ROBOTS`: Respect robots.txt - use `on` or `off` (default: off)
-- `WAIT_SECS`: Delay between requests in seconds (default: 1)
-- `QUOTA`: Download limit, e.g., `5G`, `500M` (default: unlimited)
+Output: JSONL files in `datatrove_extraction/output/data/`
 
-## Testing Your Crawl
+### 3. Crawled Dataset
 
-Once your crawl is complete, you can verify and explore the WARC files using [ReplayWeb.page](https://replayweb.page/):
+The final processed dataset is stored in the `crawled_dataset/` directory.
 
-1. Go to https://replayweb.page/
-2. Upload your WARC file(s) from the `crawl_out/your_prefix_name/` directory
-3. Browse the archived website as it was captured during the crawl
+## Getting Help
 
-This is a great way to make sure everything worked correctly and to preview what was captured!
-
-## Output Structure
-
-After running the crawler, you'll find:
-
-```
-crawl_out/
-└── prefix/
-    ├── prefix-*.warc.gz    # Main WARC files
-    ├── logs/
-    │   ├── your_prefix_name.log      # Crawl log
-    │   └── your_prefix_name.rejected.log  # Rejected URLs
-    └── _meta/                         # Metadata WARC files
-```
-
-## Additional Tools
-
-### Extracting URLs from Sitemaps
-
-If you need to extract URLs from a sitemap to add to your `file.txt`, you can use the `sitemap_to_links.sh` script:
-
-```bash
-cd crawling
-./sitemap_to_links.sh "https://www.example.com/sitemap.xml" output.txt
-```
-
-This will extract all URLs from the sitemap and save them to `output.txt`, which you can then append to your `file.txt` if needed.
+- For crawling-specific questions, see [crawling/README.md](crawling/README.md)
+- For extraction-specific questions, see [datatrove_extraction/README.md](datatrove_extraction/README.md)
 
 ## Notes
 
-- The crawler stays on the same host as your seed URLs (no cross-site crawling)
+- The crawler stays on the same host as seed URLs (no cross-site crawling)
 - Common crawler traps (login pages, admin areas, etc.) are automatically filtered out
 - The crawler is polite by default, with delays between requests
-- Temporary files are automatically cleaned up after the crawl completes
+- Text extraction uses Trafilatura with precision-focused settings
+- Repetitive content is automatically filtered out during extraction
 
-Happy crawling! MTNRA 🕷️
+Happy crawling! 🕷️

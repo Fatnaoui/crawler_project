@@ -1,4 +1,4 @@
-from datatrove.pipeline.filters import GopherRepetitionFilter
+from datatrove.pipeline.filters import GopherRepetitionFilter, LanguageFilter
 from datatrove.pipeline.readers import WarcReader
 from datatrove.pipeline.writers.jsonl import JsonlWriter
 from datatrove.pipeline.extractors import Trafilatura
@@ -14,11 +14,12 @@ def main():
             glob_pattern="*.warc.gz",
             # limit=1 
         ),
-        Trafilatura(favour_precision=True),
+        Trafilatura(favour_precision=True),    # to use recall: favour_precision=False, favour_recall=True
+
         
         GopherRepetitionFilter(
             exclusion_writer=JsonlWriter(
-                f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}"
+                f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/2_gopher_rep"
             )
         ),
         

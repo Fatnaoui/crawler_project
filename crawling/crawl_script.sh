@@ -22,7 +22,7 @@ Usage:
 Examples:
   crawl_script.sh file.txt <prefix>
   crawl_script.sh "https://example.com/" <prefix>
-  DEPTH=3 ROBOTS=on ./crawl_script.sh "https://example.com/" <prefix>
+  DEPTH=4 ROBOTS=on ./crawl_script.sh "https://example.com/" <prefix>
 
 Seeds file format:
   - One URL per line
@@ -30,7 +30,7 @@ Seeds file format:
   - Lines starting with # are ignored
 
 Environment variables (tunable):
-  DEPTH           Recursion depth (default: 4)
+  DEPTH           Recursion depth (default: 3)
   WAIT_SECS       Polite delay between requests (default: 1)
   RANDOM_WAIT     1 to add jitter (default: 1)
   TIMEOUT_SECS    Network timeout per request (default: 30)
@@ -126,7 +126,7 @@ fi
 # -------------------------
 # Defaults (can be overridden via env)
 # -------------------------
-DEPTH="${DEPTH:-4}"
+DEPTH="${DEPTH:-3}"
 WAIT_SECS="${WAIT_SECS:-1}"
 RANDOM_WAIT="${RANDOM_WAIT:-1}"
 TIMEOUT_SECS="${TIMEOUT_SECS:-30}"
