@@ -20,9 +20,9 @@ Usage:
   ./crawl_script.sh <seed_url|seeds_file> <prefix>
 
 Examples:
-  crawl_script.sh "https://example.com/" <prefix>
   crawl_script.sh file.txt <prefix>
-  DEPTH=4 QUOTA=5G WAIT_SECS=2 crawl_warc.sh "https://example.com/" <prefix>
+  crawl_script.sh "https://example.com/" <prefix>
+  DEPTH=3 ROBOTS=on ./crawl_script.sh "https://example.com/" <prefix>
 
 Seeds file format:
   - One URL per line
