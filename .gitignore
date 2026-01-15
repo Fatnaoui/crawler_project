@@ -1,5 +1,4 @@
-models_cache/
-explanation/
+explanation/*
 .env
 
 __pycache__/
