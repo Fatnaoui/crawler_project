@@ -1,0 +1,40 @@
+2026-01-16 11:30:37.319 | INFO     | datatrove.utils.logging:add_task_logger:76 - Launching pipeline for rank=0
+2026-01-16 11:30:37.320 | INFO     | datatrove.utils.logging:log_pipeline:108 - 
+--- 🛠️ PIPELINE 🛠
+📖 - READER: 🕷 Warc
+🛢 - EXTRAC: ⛏ Trafilatura
+🔻 - FILTER: 🔤 Arabic Normalization
+🔻 - FILTER: 👯 Gopher Repetition
+🔻 - FILTER: 🥇 Gopher Quality (Darija)
+🔻 - FILTER: ⛰ C4 Quality
+💽 - WRITER: 🐿 Jsonl
+2026-01-16 11:30:37.325 | INFO     | datatrove.pipeline.readers.base:read_files_shard:201 - Reading input file ar.wikipedia.org-00000.warc.gz, 1/1
+2026-01-16 11:30:42.470 | INFO     | datatrove.pipeline.extractors.base:__exit__:178 - Found 0 alive processes to terminate
+2026-01-16 11:30:42.472 | SUCCESS  | datatrove.executor.base:_run_for_rank:140 - Processing done for rank=0
+2026-01-16 11:30:42.481 | INFO     | datatrove.executor.base:_run_for_rank:147 - 
+
+📉📉📉 Stats: Task 0 📉📉📉
+
+Total Runtime: 5.11 seconds
+
+📖 - READER: 🕷 Warc
+    Runtime: (1.76%) 0.09 seconds [3.11 milliseconds±6.09 milliseconds/doc]
+    Stats: {input_files: 1, doc_len: 435314 [min=40480, max=227351, 145104.67±95424/doc], documents: 3 [3.00/input_file]}
+🛢 - EXTRAC: ⛏ Trafilatura
+    Runtime: (18.34%) 0.94 seconds [312.23 milliseconds±110.61 milliseconds/doc]
+    Stats: {total: 3, extracted: 3, forwarded: 3, doc_len: 10298 [min=129, max=9693, 3432.67±5424/doc]}
+🔻 - FILTER: 🔤 Arabic Normalization
+    Runtime: (0.04%) 0 seconds [0.69 milliseconds±1.04 milliseconds/doc]
+    Stats: {total: 3, forwarded: 3, doc_len: 9946 [min=126, max=9345, 3315.33±5225/doc]}
+🔻 - FILTER: 👯 Gopher Repetition
+    Runtime: (78.31%) 4 seconds [1 second and 333.17 milliseconds±2 seconds and 301.90 milliseconds/doc]
+    Stats: {total: 3, forwarded: 2, doc_len: 9820 [min=475, max=9345, 4910.00±6272/doc], dropped: 1, dropped_top_4_gram: 1}
+🔻 - FILTER: 🥇 Gopher Quality (Darija)
+    Runtime: (0.09%) 0 seconds [2.19 milliseconds±2.28 milliseconds/doc]
+    Stats: {total: 2, forwarded: 2, doc_len: 9820 [min=475, max=9345, 4910.00±6272/doc]}
+🔻 - FILTER: ⛰ C4 Quality
+    Runtime: (1.34%) 0.07 seconds [34.17 milliseconds±31.99 milliseconds/doc]
+    Stats: {line-total: 96, line-kept: 78, line-filter-too_few_words: 18, total: 2, forwarded: 2, doc_len: 9693 [min=378, max=9315, 4846.50±6319/doc]}
+💽 - WRITER: 🐿 Jsonl
+    Runtime: (0.12%) 0.01 seconds [2.96 milliseconds±3.02 milliseconds/doc]
+    Stats: {XXXXX.jsonl.gz: 2, total: 2, doc_len: 9693 [min=378, max=9315, 4846.50±6319/doc]}

@@ -1,0 +1,180 @@
+{
+    "pipeline": [
+        {
+            "compression": "infer",
+            "limit": 3,
+            "skip": 0,
+            "text_key": "text",
+            "id_key": "id",
+            "adapter": "<bound method BaseReader._default_adapter of \ud83d\udcd6 - READER: \ud83d\udd77 Warc>",
+            "_empty_warning": false,
+            "default_metadata": null,
+            "data_folder": "DataFolder(path='/home/fatnaoui/projects/crawler_project/datatrove_extraction/input', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+            "paths_file": null,
+            "recursive": true,
+            "glob_pattern": "*.warc.gz",
+            "shuffle_files": false,
+            "file_progress": false,
+            "doc_progress": false
+        },
+        {
+            "timeout": 30,
+            "_warned_error": false,
+            "favour_precision": true,
+            "include_images": false,
+            "deduplicate": true,
+            "kwargs": {}
+        },
+        {
+            "exclusion_writer": {
+                "compression": "gzip",
+                "output_folder": "DataFolder(path='/home/fatnaoui/projects/crawler_project/datatrove_extraction/output/Rejected/1_arabic_norm', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+                "max_file_size": -1,
+                "file_id_counter": {},
+                "output_filename": "<string.Template object at 0x7b292c12dbd0>",
+                "output_mg": "<datatrove.io.OutputFileManager object at 0x7b29363376d0>",
+                "adapter": "<bound method DiskWriter._default_adapter of \ud83d\udcbd - WRITER: \ud83d\udc3f Jsonl>",
+                "expand_metadata": false
+            },
+            "batch_size": 1,
+            "remove_diacritics": true,
+            "normalize_whitespace": true,
+            "normalize_arabic_chars": true,
+            "remove_zero_width": true,
+            "remove_tatweel": true,
+            "normalize_numbers": false,
+            "preserve_newlines": true,
+            "diacritics_regex": "re.compile('[\\\\u064B-\\\\u065F\\\\u0670]')",
+            "alef_variations": "re.compile('[\\\\u0622\\\\u0623\\\\u0625\\\\u0671]')",
+            "zero_width_regex": "re.compile('[\\\\u200B-\\\\u200D\\\\uFEFF\\\\u200E\\\\u200F\\\\u202A-\\\\u202E\\\\u2066-\\\\u2069]')",
+            "tatweel_regex": "re.compile('\\\\u0640')"
+        },
+        {
+            "exclusion_writer": {
+                "compression": "gzip",
+                "output_folder": "DataFolder(path='/home/fatnaoui/projects/crawler_project/datatrove_extraction/output/Rejected/2_gopher_rep', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+                "max_file_size": -1,
+                "file_id_counter": {},
+                "output_filename": "<string.Template object at 0x7b292c12f010>",
+                "output_mg": "<datatrove.io.OutputFileManager object at 0x7b2935d8ac90>",
+                "adapter": "<bound method DiskWriter._default_adapter of \ud83d\udcbd - WRITER: \ud83d\udc3f Jsonl>",
+                "expand_metadata": false
+            },
+            "batch_size": 1,
+            "dup_line_frac": 0.3,
+            "dup_para_frac": 0.3,
+            "dup_line_char_frac": 0.2,
+            "dup_para_char_frac": 0.2,
+            "top_n_grams": [
+                [
+                    2,
+                    0.2
+                ],
+                [
+                    3,
+                    0.18
+                ],
+                [
+                    4,
+                    0.16
+                ]
+            ],
+            "dup_n_grams": [
+                [
+                    5,
+                    0.15
+                ],
+                [
+                    6,
+                    0.14
+                ],
+                [
+                    7,
+                    0.13
+                ],
+                [
+                    8,
+                    0.12
+                ],
+                [
+                    9,
+                    0.11
+                ],
+                [
+                    10,
+                    0.1
+                ]
+            ],
+            "paragraph_exp": "re.compile('\\\\n{2,}')",
+            "_line_splitter": "re.compile('\\n+')",
+            "language": "ary"
+        },
+        {
+            "exclusion_writer": {
+                "compression": "gzip",
+                "output_folder": "DataFolder(path='/home/fatnaoui/projects/crawler_project/datatrove_extraction/output/Rejected/3_gopher_qual', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+                "max_file_size": -1,
+                "file_id_counter": {},
+                "output_filename": "<string.Template object at 0x7b292c1369d0>",
+                "output_mg": "<datatrove.io.OutputFileManager object at 0x7b292c137050>",
+                "adapter": "<bound method DiskWriter._default_adapter of \ud83d\udcbd - WRITER: \ud83d\udc3f Jsonl>",
+                "expand_metadata": false
+            },
+            "batch_size": 1,
+            "min_doc_words": 15,
+            "max_doc_words": null,
+            "min_avg_word_length": 2,
+            "max_avg_word_length": 18,
+            "max_symbol_word_ratio": 0.2,
+            "max_bullet_lines_ratio": 0.9,
+            "max_ellipsis_lines_ratio": 0.3,
+            "max_non_alpha_words_ratio": 0.8,
+            "language": "ary"
+        },
+        {
+            "exclusion_writer": {
+                "compression": "gzip",
+                "output_folder": "DataFolder(path='/home/fatnaoui/projects/crawler_project/datatrove_extraction/output/Rejected/4_c4_qual', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+                "max_file_size": -1,
+                "file_id_counter": {},
+                "output_filename": "<string.Template object at 0x7b292c136850>",
+                "output_mg": "<datatrove.io.OutputFileManager object at 0x7b292c137e90>",
+                "adapter": "<bound method DiskWriter._default_adapter of \ud83d\udcbd - WRITER: \ud83d\udc3f Jsonl>",
+                "expand_metadata": false
+            },
+            "batch_size": 1,
+            "split_paragraph": true,
+            "remove_citations": true,
+            "filter_no_terminal_punct": false,
+            "min_num_sentences": 3,
+            "min_words_per_line": 2,
+            "max_word_length": 1000,
+            "filter_lorem_ipsum": true,
+            "filter_javascript": true,
+            "filter_curly_bracket": false,
+            "filter_policy": true,
+            "language": "ary"
+        },
+        {
+            "compression": "gzip",
+            "output_folder": "DataFolder(path='/home/fatnaoui/projects/crawler_project/datatrove_extraction/output/data', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+            "max_file_size": -1,
+            "file_id_counter": {},
+            "output_filename": "<string.Template object at 0x7b292c12dd10>",
+            "output_mg": "<datatrove.io.OutputFileManager object at 0x7b292c13dd90>",
+            "adapter": "<bound method DiskWriter._default_adapter of \ud83d\udcbd - WRITER: \ud83d\udc3f Jsonl>",
+            "expand_metadata": false
+        }
+    ],
+    "logging_dir": "DataFolder(path='/home/fatnaoui/projects/crawler_project/log', fs=<fsspec.implementations.local.LocalFileSystem object at 0x7b292c11b4d0>)",
+    "skip_completed": true,
+    "randomize_start_duration": 0,
+    "tasks": 1,
+    "workers": 1,
+    "start_method": "forkserver",
+    "local_tasks": 1,
+    "local_rank_offset": 0,
+    "depends": null,
+    "_launched": true,
+    "world_size": 1
+}
