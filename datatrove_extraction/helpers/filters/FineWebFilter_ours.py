@@ -4,17 +4,14 @@ from datatrove.data import Document
 from datatrove.pipeline.filters.base_filter import BaseFilter
 from datatrove.pipeline.filters.gopher_repetition_filter import find_duplicates
 from datatrove.pipeline.writers.disk_base import DiskWriter
-from datatrove.utils.text import TERMINAL_PUNCTUATION, split_into_words
+from datatrove.utils.text import split_into_words
 from datatrove.utils.typeshelper import Languages
 
 
 # Ponctuation terminale pour Darija (arabe et latin)
 TERMINAL_PUNCTUATION = (
-    # Ponctuation latine
     ".", "!", "?", 
-    # Ponctuation arabe
-    "؟", 
-    # Ellipses
+    "؟", "؛",  
     "…", "...",
 )
 
@@ -56,14 +53,22 @@ class FineWebQualityFilter(BaseFilter):
         if ratio > self.short_line_threshold:
             return False, "short_line_ratio"
 
-        ratio = find_duplicates(lines)[1] / len(doc.text.replace("\n", ""))
+        text_without_newlines = doc.text.replace("\n", "")
+        if len(text_without_newlines) == 0:
+            return False, "empty_after_newline_removal"
+
+        ratio = find_duplicates(lines)[1] / len(text_without_newlines)
 
         if ratio > self.char_duplicates_ratio:
             return False, "char_dup_ratio"
 
         words = split_into_words(doc.text, self.language)
+        if len(words) == 0:
+            return False, "no_words"
+
         new_line = doc.text.count("\n")
-        if new_line / len(words) > self.new_line_ratio:
+        new_line_ratio = new_line / len(words) if len(words) > 0 else float('inf')
+        if new_line_ratio > self.new_line_ratio:
             return False, "list_ratio"
 
         return True

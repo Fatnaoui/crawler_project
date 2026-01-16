@@ -8,9 +8,16 @@ from datatrove.pipeline.filters import (
     LanguageFilter, 
 )
 
-from helpers.GopherQualityFilter_ours import GopherQualityFilter
-from helpers.C4QualityFilter_ours import C4QualityFilter
-from helpers.FineWebFilter_ours import FineWebQualityFilter
+from helpers.filters.GopherQualityFilter_ours import GopherQualityFilter
+from helpers.filters.C4QualityFilter_ours import C4QualityFilter
+from helpers.filters.FineWebFilter_ours import FineWebQualityFilter
+from helpers.filters.ArabicNormalizationFilter import ArabicNormalizationFilter
+from helpers.extra_helpers.validateInputs import validate_inputs
+
+try:
+    validate_inputs()
+except (FileNotFoundError, ValueError) as e:
+    print(f"Validation error: {e}")
 
 OUTPUT_BASE_PATH = "output"
 REJECTED_FOLDER = "Rejected"
@@ -24,6 +31,9 @@ def main():
         ),
         Trafilatura(favour_precision=True),    # to use recall: favour_precision=False, favour_recall=True
 
+        ArabicNormalizationFilter(
+            exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/1_arabic_norm"),
+        ),
         
         GopherRepetitionFilter(                # then with this one with oumaima
             exclusion_writer=JsonlWriter(
@@ -37,7 +47,7 @@ def main():
         ),
 
         C4QualityFilter(
-            exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/4_c4_qual/"),
+            exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/4_c4_qual"),
         ),
 
         FineWebQualityFilter(
@@ -56,7 +66,14 @@ def main():
         workers=1
     )
 
-    executor.run()
+    try:
+        executor.run()
+    except Exception as e:
+        print(f"Pipeline error: {e}")
+        # Log error details
+        import traceback
+        traceback.print_exc()
+        raise
 
 if __name__ == '__main__':
     main()

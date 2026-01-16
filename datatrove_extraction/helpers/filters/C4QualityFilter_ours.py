@@ -37,14 +37,6 @@ PLACEHOLDER_PATTERNS = [
     "lorem ipsum"
 ]
 
-# Arabic diacritics (tashkeel) Unicode range
-ARABIC_DIACRITICS = re.compile(r'[\u064B-\u065F\u0670]')
-
-
-def normalize_arabic_diacritics(text: str) -> str:
-    """Remove Arabic diacritics (tashkeel) for normalization."""
-    return ARABIC_DIACRITICS.sub('', text)
-
 
 class C4QualityFilter(BaseFilter):
     """Applies heuristic rules from C4 https://jmlr.org/papers/volume21/20-074/20-074.pdf
@@ -119,9 +111,6 @@ class C4QualityFilter(BaseFilter):
         for line in lines:
             line = line.strip()
             
-            # Normalize Arabic diacritics early in the pipeline
-            line = normalize_arabic_diacritics(line)
-            
             words = line.split()
             self.stat_update("line-total")
             # check line has too long word
@@ -163,4 +152,9 @@ class C4QualityFilter(BaseFilter):
             return False, "too_few_sentences"
 
         doc.text = ("\n" if self.split_paragraph else " ").join(kept_lines).strip()
+
+        # Check if document is empty after filtering
+        if not doc.text or len(doc.text.strip()) == 0:
+            return False, "empty_after_filtering"
+
         return True

@@ -22,11 +22,10 @@ class GopherQualityFilter(BaseFilter):
         max_symbol_word_ratio: float | None = 0.2,
         max_bullet_lines_ratio: float | None = 0.9,
         max_ellipsis_lines_ratio: float | None = 0.3,
-        max_non_alpha_words_ratio: float | None = 0.5,  # Plus flexible pour Darija
+        max_non_alpha_words_ratio: float | None = 0.8,  # Plus flexible pour Darija
     
         exclusion_writer: DiskWriter = None,
         language: str = Languages.moroccan_arabic ,  # Utilise arabic pour l'analyse
-        allow_mixed_script: bool = True,  # Permet le mélange arabe/latin
     ):
         """
         Filter to apply Gopher's quality heuristic rules for Darija (Moroccan Arabic).
@@ -43,11 +42,8 @@ class GopherQualityFilter(BaseFilter):
             max_bullet_lines_ratio: Maximum bullet lines ratio (default: 0.9)
             max_ellipsis_lines_ratio: Maximum ellipsis lines ratio (default: 0.3)
             max_non_alpha_words_ratio: Maximum non-alpha words ratio (default: 0.75)
-            min_stop_words: Minimum number of stop words (default: 2)
-            stop_words: Custom list of stop words (default: Darija stop words)
             exclusion_writer: Writer for excluded documents
             language: Language code for tokenization
-            allow_mixed_script: Allow documents with mixed Arabic/Latin scripts
         """
         super().__init__(exclusion_writer)
         self.min_doc_words = min_doc_words
@@ -60,7 +56,6 @@ class GopherQualityFilter(BaseFilter):
         self.max_non_alpha_words_ratio = max_non_alpha_words_ratio
        
         self.language = language
-        self.allow_mixed_script = allow_mixed_script
 
     def _is_arabic_char(self, char: str) -> bool:
         """Check if character is Arabic script"""
@@ -86,41 +81,38 @@ class GopherQualityFilter(BaseFilter):
         """
         text = doc.text
         
-        # Special handling for mixed script in Darija
-        if self.allow_mixed_script:
-            # Normalize some common Darija patterns
-            text_normalized = text.lower()
-        else:
-            text_normalized = text
-        
-        words = split_into_words(text_normalized, self.language)
+        words = split_into_words(text, self.language)
         n_words = len(words)
 
         if n_words == 0:
             return False, "gopher_no_words"
 
         non_symbol_words = [w for w in words if any(ch not in PUNCTUATION_SET for ch in w)]
-        n_non_symbol_words_words = len(non_symbol_words)
+        n_non_symbol_words = len(non_symbol_words)
 
         # Check document length
-        if self.min_doc_words and n_non_symbol_words_words < self.min_doc_words:
+        if self.min_doc_words and n_non_symbol_words < self.min_doc_words:
             return False, "gopher_short_doc"
-        if self.max_doc_words and n_non_symbol_words_words > self.max_doc_words:
+        if self.max_doc_words and n_non_symbol_words > self.max_doc_words:
             return False, "gopher_long_doc"
 
         # Check average word length
-        if n_non_symbol_words_words > 0:
+        if n_non_symbol_words > 0:
             avg_n_words = np.mean([len(w) for w in non_symbol_words])
             if self.min_avg_word_length and avg_n_words < self.min_avg_word_length:
                 return False, "gopher_below_avg_threshold"
             if self.max_avg_word_length and avg_n_words > self.max_avg_word_length:
                 return False, "gopher_above_avg_threshold"
 
-        # Check symbol-to-word ratio
-        if self.max_symbol_word_ratio and text.count("#") / n_words > self.max_symbol_word_ratio:
-            return False, "gopher_too_many_hashes"
-        if self.max_symbol_word_ratio and (text.count("...") + text.count("…")) / n_words > self.max_symbol_word_ratio:
-            return False, "gopher_too_many_ellipsis"
+        # Check symbol-to-word ratio (with zero-division protection)
+        if self.max_symbol_word_ratio and n_words > 0:
+            hash_ratio = text.count("#") / n_words
+            if hash_ratio > self.max_symbol_word_ratio:
+                return False, "gopher_too_many_hashes"
+            
+            ellipsis_ratio = (text.count("...") + text.count("…")) / n_words
+            if ellipsis_ratio > self.max_symbol_word_ratio:
+                return False, "gopher_too_many_ellipsis"
 
         # Check bullet points and ellipsis in lines
         lines = text.splitlines()
@@ -138,12 +130,14 @@ class GopherQualityFilter(BaseFilter):
             ):
                 return False, "gopher_too_many_end_ellipsis"
 
-        # Check alphabetic character ratio (more flexible for Darija)
-        if (
-            self.max_non_alpha_words_ratio
-            and sum([any((c.isalpha() or self._is_arabic_char(c) for c in w)) for w in words]) / n_words < self.max_non_alpha_words_ratio
-        ):
-            return False, "gopher_below_alpha_threshold"
+        # Calculate non-alpha words ratio correctly
+        alpha_words_count = sum([any((c.isalpha() or self._is_arabic_char(c) for c in w)) for w in words])
+        non_alpha_words_count = n_words - alpha_words_count
+        non_alpha_ratio = non_alpha_words_count / n_words if n_words > 0 else 0
+
+        # Reject if non-alpha ratio exceeds threshold
+        if self.max_non_alpha_words_ratio and non_alpha_ratio > self.max_non_alpha_words_ratio:
+            return False, "gopher_too_many_non_alpha"
 
       
 
