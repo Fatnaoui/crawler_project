@@ -3,6 +3,7 @@ from datatrove.pipeline.writers.jsonl import JsonlWriter
 from datatrove.pipeline.extractors import Trafilatura
 from datatrove.executor import LocalPipelineExecutor
 from datatrove.utils.typeshelper import Languages
+from datatrove.pipeline.tokens import TokensCounter
 from datatrove.pipeline.filters import (
     GopherRepetitionFilter, 
     LanguageFilter, 
@@ -23,6 +24,7 @@ except (FileNotFoundError, ValueError) as e:
 OUTPUT_BASE_PATH = Path(__file__).parent / "output"
 REJECTED_FOLDER = "rejected"
 input_path=Path(__file__).parent / "input"
+model_cache_path=Path(__file__).parent.parent / "models_cache"
 
 def main():
     pipeline = [
@@ -37,7 +39,7 @@ def main():
             exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/1_arabic_norm"),
         ),
         
-        GopherRepetitionFilter(                # then with this one with oumaima
+        GopherRepetitionFilter(              
             exclusion_writer=JsonlWriter(
                 f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/2_gopher_rep"
             ),
@@ -54,6 +56,10 @@ def main():
 
         FineWebQualityFilter(
             exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/5_fineweb_qual")
+        ),
+
+        TokensCounter(
+            tokenizer_name_or_path=str(model_cache_path / "aragpt2_base_tokenizer" / "tokenizer.json"),
         ),
         
         JsonlWriter(
