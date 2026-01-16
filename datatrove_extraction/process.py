@@ -21,7 +21,7 @@ except (FileNotFoundError, ValueError) as e:
     print(f"Validation error: {e}")
 
 OUTPUT_BASE_PATH = Path(__file__).parent / "output"
-REJECTED_FOLDER = "Rejected"
+REJECTED_FOLDER = "rejected"
 input_path=Path(__file__).parent / "input"
 
 def main():
@@ -29,7 +29,7 @@ def main():
         WarcReader(
             data_folder=str(input_path),
             glob_pattern="*.warc.gz",
-            limit=3
+            limit=10
         ),
         Trafilatura(favour_precision=True, timeout=30),    # to use recall: favour_precision=False, favour_recall=True
 
@@ -52,9 +52,9 @@ def main():
             exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/4_c4_qual"),
         ),
 
-        # FineWebQualityFilter(
-        #     exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/5_fineweb_qual")
-        # ),
+        FineWebQualityFilter(
+            exclusion_writer=JsonlWriter(f"{OUTPUT_BASE_PATH}/{REJECTED_FOLDER}/5_fineweb_qual")
+        ),
         
         JsonlWriter(
             output_folder=f"{OUTPUT_BASE_PATH}/data",
@@ -63,7 +63,7 @@ def main():
 
     executor = LocalPipelineExecutor(
         pipeline=pipeline,
-        logging_dir="log",
+        logging_dir=f"{OUTPUT_BASE_PATH}/log",
         tasks=1,
         workers=1
     )

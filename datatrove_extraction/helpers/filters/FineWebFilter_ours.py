@@ -4,16 +4,8 @@ from datatrove.data import Document
 from datatrove.pipeline.filters.base_filter import BaseFilter
 from datatrove.pipeline.filters.gopher_repetition_filter import find_duplicates
 from datatrove.pipeline.writers.disk_base import DiskWriter
-from datatrove.utils.text import split_into_words
+from datatrove.utils.text import split_into_words, TERMINAL_PUNCTUATION
 from datatrove.utils.typeshelper import Languages
-
-
-# Ponctuation terminale pour Darija (arabe et latin)
-TERMINAL_PUNCTUATION = (
-    ".", "!", "?", 
-    "؟", "؛",  
-    "…", "...",
-)
 
 class FineWebQualityFilter(BaseFilter):
     name = "🍷 FineWeb Quality"
@@ -21,12 +13,12 @@ class FineWebQualityFilter(BaseFilter):
     def __init__(
         self,
         exclusion_writer: DiskWriter | None = None,
-        line_punct_thr: float = 0.12,
+        line_punct_thr: float = 0.2,
         line_punct_exclude_zero: bool = False,
         stop_chars: tuple[str, ...] | None = None,
         short_line_thr: float = 0.67,
         short_line_length: int = 30,
-        char_duplicates_ratio: float = 0.01,
+        char_duplicates_ratio: float = 1.0,
         new_line_ratio: float = 0.3,
         language: str = Languages.moroccan_arabic,
     ):
